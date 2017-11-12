@@ -11,6 +11,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -72,7 +73,7 @@ public class TopicsDAO {
         }
         return status;
     }
-    
+
     public static int deleteTopic(Topic t) {
         PreparedStatement ps_delete = null;
         int status = 0;
@@ -92,27 +93,37 @@ public class TopicsDAO {
         }
         return status;
     }
-    
-    public static String viewAllTopics() {
+
+    public static ArrayList<Topic> viewAllTopics() {
         ResultSet rs = null;
-        String html_code = "<table border = 1px>\n"
-                + "<tr>\n"
-                + "     <td>Topic ID</td><td>Topic Name</td>\n"
-                + "</tr>\n";
+        ArrayList<Topic> al = new ArrayList();
         try {
             Connection con = getConnection();
             PreparedStatement ps_view_all_topics = con.prepareStatement("select * from topics order by topic_id");
             rs = ps_view_all_topics.executeQuery();
             while (rs.next()) {
-                html_code += "<tr>\n"
-                        + "         <td>" + rs.getString(1) + "</td><td>" + rs.getString(2) + "</td>"
-                        + "     </tr>";
+                al.add(new Topic(rs.getString(1), rs.getString(2)));
             }
-            html_code += "</table>";
         } catch (SQLException ex) {
             Logger.getLogger(TopicsDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return html_code;
+        return al;
     }
-    
+
+    public static String getTopicName(String topic_id) {
+        ResultSet rs = null;
+        String ans = null;
+        try {
+            Connection con = getConnection();
+            PreparedStatement ps_view_all_topics = con.prepareStatement("select topic_name from topics where topic_id = '" + topic_id + "'");
+            rs = ps_view_all_topics.executeQuery();
+            while (rs.next()) {
+                ans = rs.getString(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TopicsDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ans;
+    }
+
 }

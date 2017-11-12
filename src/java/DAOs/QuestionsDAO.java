@@ -11,6 +11,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -105,27 +106,19 @@ public class QuestionsDAO {
         return status;
     }
 
-    public static String viewAllQuestions(String topic_id) {
+    public static ArrayList<Question> viewAllQuestions(String topic_id) {
         ResultSet rs = null;
-        String html_code = "<table border = 1px>\n"
-                + "<tr>\n"
-                + "     <td>No.</td><td>Question Text</td><td>Option A</td><td>Option B</td><td>Option C</td><td>Option D</td><td>Correct Answer</td><td>Level</td>\n"
-                + "</tr>\n";
+        ArrayList<Question> al = new ArrayList();
         try {
             Connection con = getConnection();
             PreparedStatement ps_view_all_Questions = con.prepareStatement("select * from Questions where topic_id = '" + topic_id + "' order by Question_id");
             rs = ps_view_all_Questions.executeQuery();
-            int i = 1;
             while (rs.next()) {
-                html_code += "<tr>\n"
-                        + "         <td>" + i + "</td><td>" + rs.getString(3) + "</td><td>" + rs.getString(4) + "</td><td>" + rs.getString(5) + "</td><td>" + rs.getString(6) + "</td><td>" + rs.getString(7) + "</td><td>" + rs.getString(8) + "</td><td>" + rs.getInt(9) + "</td>"
-                        + "     </tr>";
-                i++;
+                al.add(new Question(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6),rs.getString(7),rs.getString(8), rs.getInt(9)));
             }
-            html_code += "</table>";
         } catch (SQLException ex) {
             Logger.getLogger(QuestionsDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return html_code;
+        return al;
     }
 }

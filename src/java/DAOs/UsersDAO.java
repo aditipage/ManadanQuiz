@@ -5,13 +5,13 @@
  */
 package DAOs;
 
-import BeanClasses.Topic;
 import BeanClasses.User;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -105,52 +105,36 @@ public class UsersDAO {
         return status;
     }
 
-    public static String viewAllStudents() {
+    public static ArrayList<User> viewAllStudents() {
         ResultSet rs = null;
-        String html_code = "<table border = 1px>\n"
-                + "<tr>\n"
-                + "     <td>No.</td><td>Student's User Name</td>\n"
-                + "</tr>\n";
+        ArrayList<User> al = new ArrayList();
         try {
             Connection con = getConnection();
             PreparedStatement ps_view_all_students = con.prepareStatement("select * from users where user_type = 'S' order by user_name");
             rs = ps_view_all_students.executeQuery();
-            int i = 1;
             while (rs.next()) {
-                html_code += "<tr>\n"
-                        + "         <td>" + i + "</td><td><input type = \"button\" name = \"user_name\" value = \"" + rs.getString(1) + "\"></td>"
-                        + "     </tr>";
-                i++;
+                al.add(new User(rs.getString(1), rs.getString(2), rs.getString(3).charAt(0)));
             }
-            html_code += "</table>";
         } catch (SQLException ex) {
             Logger.getLogger(UsersDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return html_code;
+        return al;
     }
     
-    public static String viewAllAdmins() {
+    public static ArrayList<User> viewAllAdmins() {
         ResultSet rs = null;
-        String html_code = "<table border = 1px>\n"
-                + "<tr>\n"
-                + "     <td>No.</td><td>Student's User Name</td>\n"
-                + "</tr>\n";
+        ArrayList<User> al = new ArrayList();
         try {
             Connection con = getConnection();
             PreparedStatement ps_view_all_admins = con.prepareStatement("select * from users where user_type = 'A' order by user_name");
             rs = ps_view_all_admins.executeQuery();
-            int i = 1;
             while (rs.next()) {
-                html_code += "<tr>\n"
-                        + "         <td>" + i + "</td><td>" + rs.getString(1) + "</td>"
-                        + "     </tr>";
-                i++;
+                al.add(new User(rs.getString(1), rs.getString(2), rs.getString(3).charAt(0)));
             }
-            html_code += "</table>";
         } catch (SQLException ex) {
             Logger.getLogger(UsersDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return html_code;
+        return al;
     }
 
 }

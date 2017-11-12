@@ -11,6 +11,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,7 +43,7 @@ public class QuizDAO {
                 while (rs.next()) {
                     r_id = rs.getInt(1) + 1;
                 }
-                ps_insert = con.prepareStatement("insert into quiz (result_id, topic_id, number_of_questions, level, duration, user_name, score, time,) values (" + r_id + ",?, ?, ?, ?, ?, ?, ?)");
+                ps_insert = con.prepareStatement("insert into quiz (result_id, topic_id, number_of_questions, level, duration, user_name, score, time) values (" + r_id + ",?, ?, ?, ?, ?, ?, ?)");
                 ps_insert.setString(2, q.getTopic_id());
                 ps_insert.setInt(3, q.getNumber_of_questions());
                 ps_insert.setInt(4, q.getLevel());
@@ -64,80 +65,52 @@ public class QuizDAO {
         return status;
     }
 
-    public static String viewAllQuizzesByTopic(String topic_id) {
+    public static ArrayList<Quiz> viewAllQuizzesByTopic(String topic_id) {
         ResultSet rs = null;
-        String html_code = "<table border = 1px>\n"
-                + "<tr>\n"
-                + "     <td>No.</td><td>Student's User Name</td><td>Level</td><td>Duration(in minutes)</td><td>Number of Questions</td><td>Score</td><td>Time</td>\n"
-                + "</tr>\n";
+        ArrayList<Quiz> al = new ArrayList();
         try {
             Connection con = getConnection();
             PreparedStatement ps_view_all_Quizzes_by_topic = con.prepareStatement("select * from Quiz where topic_id = '" + topic_id + "' order by result_id");
             rs = ps_view_all_Quizzes_by_topic.executeQuery();
-            int i = 1;
             while (rs.next()) {
-                html_code += "<tr>\n"
-                        + "         <td>" + i + "</td><td>" + rs.getString(6) + "</td><td>" + rs.getString(4) + "</td><td>" + rs.getString(5) + "</td><td>" + rs.getString(3) + "</td><td>" + rs.getString(7) + "</td><td>" + rs.getString(8) + "</td>"
-                        + "     </tr>";
-                i++;
+                al.add(new Quiz(rs.getInt(1), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(7), rs.getString(2), rs.getString(6), rs.getTimestamp(8)));
             }
-            html_code += "</table>";
         } catch (SQLException ex) {
             Logger.getLogger(QuizDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return html_code;
+        return al;
     }
 
-    public static String viewAllQuizzesByStudent(String user_name) {
+    public static ArrayList<Quiz> viewAllQuizzesByStudent(String user_name) {
         ResultSet rs = null;
-        String html_code = "<table border = 1px>\n"
-                + "<tr>\n"
-                + "     <td>No.</td><td>Topic</td><td>Level</td><td>Duration(in minutes)</td><td>Number of Questions</td><td>Score</td><td>Time</td>\n"
-                + "</tr>\n";
+        ArrayList<Quiz> al = new ArrayList();
         try {
             Connection con = getConnection();
             PreparedStatement ps_view_all_Quizzes_by_student = con.prepareStatement("select * from Quiz where user_name = '" + user_name + "' order by result_id");
             rs = ps_view_all_Quizzes_by_student.executeQuery();
-            int i = 1;
             while (rs.next()) {
-                PreparedStatement ps_get_topic_name = con.prepareStatement("select topic_name from Topics where topic_id = '" + rs.getString(2) + "'");
-                ResultSet rs1 = ps_get_topic_name.executeQuery();
-                while (rs1.next()) {
-                    html_code += "<tr>\n"
-                            + "         <td>" + i + "</td><td>" + rs1.getString(1) + "</td><td>" + rs.getString(4) + "</td><td>" + rs.getString(5) + "</td><td>" + rs.getString(3) + "</td><td>" + rs.getString(7) + "</td><td>" + rs.getString(8) + "</td>"
-                            + "     </tr>";
-                    i++;
-                }
+                al.add(new Quiz(rs.getInt(1), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(7), rs.getString(2), rs.getString(6), rs.getTimestamp(8)));
             }
-            html_code += "</table>";
         } catch (SQLException ex) {
             Logger.getLogger(QuizDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return html_code;
+        return al;
     }
 
-    public static String viewAllQuizzes(String topic_id) {
+    public static ArrayList<Quiz> viewAllQuizzes(String topic_id) {
         ResultSet rs = null;
-        String html_code = "<table border = 1px>\n"
-                + "<tr>\n"
-                + "     <td>No.</td><td>Student's User Name</td><td>Topic</td><td>Level</td><td>Duration(in minutes)</td><td>Number of Questions</td><td>Score</td><td>Time</td>\n"
-                + "</tr>\n";
+        ArrayList<Quiz> al = new ArrayList();
         try {
             Connection con = getConnection();
             PreparedStatement ps_view_all_Quizzes_by_topic = con.prepareStatement("select * from Quiz order by result_id");
             rs = ps_view_all_Quizzes_by_topic.executeQuery();
-            int i = 1;
             while (rs.next()) {
-                html_code += "<tr>\n"
-                        + "         <td>" + i + "</td><td>" + rs.getString(6) + "</td><td>" + rs.getString(2) + "</td><td>" + rs.getString(4) + "</td><td>" + rs.getString(5) + "</td><td>" + rs.getString(3) + "</td><td>" + rs.getString(7) + "</td><td>" + rs.getString(8) + "</td>"
-                        + "     </tr>";
-                i++;
+                al.add(new Quiz(rs.getInt(1), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(7), rs.getString(2), rs.getString(6), rs.getTimestamp(8)));
             }
-            html_code += "</table>";
         } catch (SQLException ex) {
             Logger.getLogger(QuizDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return html_code;
+        return al;
     }
 
 }
