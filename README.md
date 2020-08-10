@@ -1,3 +1,3 @@
 # ManadanQuiz
 
-Quiz software build with Java
+Quiz software built with Java
